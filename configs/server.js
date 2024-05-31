@@ -3,22 +3,22 @@ import cors from 'cors'
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './mongo.js';
-
+ 
 class Server {
-    contructor() {
+    constructor() {
         this.app = express();
         this.port = process.env.PORT;
 
-        this.conectarDB(); 
+        this.conectarDB();
         this.middlewares();
-        this.routes();        
+        this.routes();
     }
-
+ 
     async conectarDB() {
         await dbConnection();
     }
-
-    
+ 
+   
     middlewares() {
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(cors());
@@ -26,16 +26,17 @@ class Server {
         this.app.use(helmet());
         this.app.use(morgan('dev'));
     };
-
-    routes() {
-
-    }
-
+ 
+   
+    routes() {  
+ 
+    };
+ 
     listen() {
         this.app.listen(this.port, () => {
             console.log('Server running on port ', this.port);
         });
     }
 }
-
+ 
 export default Server;
