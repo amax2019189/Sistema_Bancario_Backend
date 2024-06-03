@@ -1,4 +1,7 @@
+import { Double } from "mongodb";
 import mongoose, {Schema} from "mongoose";
+
+const acounttypes = ['monetary','saving'];
 
 const AcountSchema = mongoose.Schema({
     noacount: {
@@ -13,7 +16,22 @@ const AcountSchema = mongoose.Schema({
     lastname: {
         type: String,
     },
-    token: {
-        type: Number
-    }
+    nopdi: {
+        type: Number,
+    },
+    accounttype: {
+        type: String,
+        enum: acounttypes,
+    },
+    accountbalance: {
+        type: Double,
+    },
 });
+
+AcountSchema.methods.toJSON = function(){
+    const { __v, password, _id, ...acount} = this.toObject();
+    acount.uid = _id;
+    return acount;
+}
+
+export default mongoose.model('Acount', AcountSchema)
