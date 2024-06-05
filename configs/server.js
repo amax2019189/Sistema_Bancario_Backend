@@ -3,11 +3,13 @@ import cors from 'cors'
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './mongo.js';
+import authRoutes from '../src/auth/auth.routes.js';
  
 class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
+        this.authPath = '/sistemaBancario/v1/auth'
 
         this.conectarDB();
         this.middlewares();
@@ -29,7 +31,7 @@ class Server {
  
    
     routes() {  
- 
+        this.app.use(this.authPath, authRoutes);
     };
  
     listen() {
