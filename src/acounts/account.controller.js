@@ -6,8 +6,8 @@ export const createAccount = async(req, res) => {
         const {uid} = req.user;
         const user = await User.findById(uid);
 
-        const {alias, name, lastname, dpiNumber, accountType } = req.body
-        const account = new Account({alias, name, lastname, dpiNumber, accountType});
+        const {name, lastname, dpiNumber, accountType, numberCel } = req.body
+        const account = new Account({name, lastname, dpiNumber, accountType, numberCel});
         await account.save();
 
         user.acounts.push(account._id);
@@ -42,7 +42,7 @@ export const desactivateAccount = async (req, res) =>{
     try {
         const{cuentaId} = req.params;
         const {uid} = req.user;
-        const {alias, pasword, dpi } = req.body;
+        const {pasword, dpi } = req.body;
 
         const user = await User.findById(uid).populate('accounts');
         if (!user) {

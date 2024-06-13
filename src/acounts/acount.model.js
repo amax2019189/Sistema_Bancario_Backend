@@ -26,15 +26,13 @@ const MovimientoSchema = mongoose.Schema({
     operationNumber: {
         type: String,
     },
+    
 });
 
 const AccountSchema = mongoose.Schema({
     accountNumber: {
         type:String,
         unique: true
-    },
-    alias:{ 
-        type:String,
     },
     name: {
         type: String,
@@ -43,6 +41,9 @@ const AccountSchema = mongoose.Schema({
         type: String,
     },
     dpiNumber: {
+        type: String,
+    },
+    numberCel: {
         type: String,
     },
     accountType: {
