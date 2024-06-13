@@ -1,5 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
+const roles = ['gerente', 'usuario', 'admin'];
+
 const UserSchema = mongoose.Schema({
     dpi: {
         type: String,
@@ -18,9 +20,18 @@ const UserSchema = mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
     },
     numbercel: {
         type: Number,
+    },
+    roleUser: {
+        type: String,
+        enum: roles,
+        default: "usuario",
+    },
+    password:{
+        type: String,
     },
     acounts: [{
         type: mongoose.Schema.Types.ObjectId,
