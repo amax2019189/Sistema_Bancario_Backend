@@ -15,9 +15,6 @@ const UserSchema = mongoose.Schema({
     img: {
         type: String,
     },
-    username: {
-        type: String, 
-    },
     email: {
         type: String,
         unique: true,

@@ -11,7 +11,11 @@ router.post(
     [
         check("email", "Este no es un correo válido").isEmail(),
         check("email").custom(existEmail),
-        check("username", "El username es obligatorio").not().isEmpty(),
+        check("lastname"),
+        check("dpi"),
+        check("numbercel"),
+        check("img"),
+        check("name", "El username es obligatorio").not().isEmpty(),
         check("password", "El password es obligatorio").not().isEmpty(),
         check("password", "El password debe de ser mayor a 6 caracteres").isLength({
           min: 6,
