@@ -4,13 +4,15 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './mongo.js';
 import authRoutes from '../src/auth/auth.routes.js';
+import accountRoutes from '../src/acounts/account.routes.js';
+
  
 class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
         this.authPath = '/sistemaBancario/v1/auth'
-
+        this.accountPath = '/sistemaBancario/v1/account'
         this.conectarDB();
         this.middlewares();
         this.routes();
@@ -32,6 +34,7 @@ class Server {
    
     routes() {  
         this.app.use(this.authPath, authRoutes);
+        this.app.use(this.accountPath, accountRoutes);
     };
  
     listen() {

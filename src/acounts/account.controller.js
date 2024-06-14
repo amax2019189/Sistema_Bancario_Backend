@@ -1,12 +1,20 @@
 import Account from "./acount.model.js";
 import User from "../users/user.model.js";
+import {validDpi, validType} from "../helpers/db-validators.js"
 
 export const createAccount = async(req, res) => {
     try {
-        const {uid} = req.user;
-        const user = await User.findById(uid);
+
+        const user = await User.findById(req.user.uid);
 
         const {name, lastname, dpiNumber, accountType, numberCel } = req.body
+
+        // Validar tipo de cuenta
+        await validType(accountType);
+
+        // Validar DPI
+        await validDpi(dpiNumber);
+        
         const account = new Account({name, lastname, dpiNumber, accountType, numberCel});
         await account.save();
 
