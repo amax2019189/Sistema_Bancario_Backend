@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 
-export const generarJWT = (uid = '', email = '', roleUser = '', username = '') => {
+export const generarJWT = (uid = '', email = '', role = '') => {
     return new Promise((resolve, reject) => {
-        const payload = { uid, email, roleUser, username }; // Asegúrate de incluir el rol en el payload
+        const payload = { uid, email, role }; // Asegúrate de incluir el rol en el payload
         jwt.sign(
             payload,
             process.env.TOKEN_KEY,

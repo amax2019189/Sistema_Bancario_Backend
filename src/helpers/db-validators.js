@@ -14,15 +14,18 @@ export const existUserById = async (id = '') => {
     }
 }
 
+
+// Función de validación de tipo de cuenta
+export const validType = async (accountType = '') => {
+    const validTypes = ["monetaria", "monetariaDolares", "ahorro", "ahorroDolares"];
+    if (!validTypes.includes(accountType)) {
+        throw new Error('The account type is not valid');
+    }
+}
+
+// Función de validación de DPI
 export const validDpi = async (dpiNumber = '') => {
-    if(dpiNumber.length !== 13){
-        throw new Error(`The DPI does not is valid`);
+    if (typeof dpiNumber !== 'string' || dpiNumber.length !== 13) {
+        throw new Error('The DPI is not valid');
     }
 }
-
-export const validName = async (name = '') => {
-    if(name !== req.user.name){
-        throw new Error(`The name is not valid`);
-    }
-}
-
