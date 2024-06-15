@@ -1,24 +1,30 @@
+import bcryptjs from 'bcryptjs';
 import Account from "./acount.model.js";
 import User from "../users/user.model.js";
 import {validDpi, validType} from "../helpers/db-validators.js"
 
 export const createAccount = async(req, res) => {
     try {
+        const {dpiNumber, accountType} = req.body;
+        const user = await User.findOne({dpi:dpiNumber});
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
 
-        const user = await User.findById(req.user.uid);
-
-        const {name, lastname, dpiNumber, accountType, numberCel } = req.body
-
-        // Validar tipo de cuenta
-        await validType(accountType);
+        if (req.user.roleUser !== 'gerente' && req.user.roleUser !== 'administrador') {
+            return res.status(403).send("Su rol no puede crear cuentas");
+        }
 
         // Validar DPI
         await validDpi(dpiNumber);
+
+        // Validar tipo de cuenta
+        await validType(accountType);
         
-        const account = new Account({name, lastname, dpiNumber, accountType, numberCel});
+        const account = new Account({accountType});
         await account.save();
 
-        user.acounts.push(account._id);
+        user.accounts.push(account._id);
         await user.save();
 
         return res
@@ -32,62 +38,85 @@ export const createAccount = async(req, res) => {
         .send(`contacta al administrador`+"error en account");
     };
 };
-
-export const getAccountsUser = async (req,res) => {
+export const getAccountsUser = async (req, res) => {
     try {
-        const {uid} = req.user;
-        const myAccount = await User.findById(uid).populate('accounts');
-        res.status(200).json(myAccount)
-    } catch (e) {
-        console.log(e);
-        return res
-        .status(403)
-        .send(`no se pudieron encontrar las cuentas`);
-    }
-}
+        const { uid } = req.user;
+        const userWithAccounts = await User.findById(uid).populate('accounts');
 
-export const desactivateAccount = async (req, res) =>{
-    try {
-        const{cuentaId} = req.params;
-        const {uid} = req.user;
-        const {pasword, dpi } = req.body;
-
-        const user = await User.findById(uid).populate('accounts');
-        if (!user) {
+        if (!userWithAccounts) {
             return res.status(404).send("Usuario no encontrado");
         }
 
-        const account = user.accounts.find(account => account._id.toString() === cuentaId);
+        return res.status(200).json(userWithAccounts);
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener las cuentas del usuario");
+    }
+};
+
+export const desactivateAccount = async (req, res) => {
+    try {
+        const { noAccount, dpi } = req.body;
+
+        if (req.user.roleUser !== 'gerente' && req.user.roleUser !== 'administrador') {
+            return res.status(403).send("Su rol no puede desactivar cuentas");
+        }
+
+        const user = await User.findOne({ dpi: dpi }).populate('accounts');  // Buscar al usuario por DPI y cargar sus cuentas
+
+        if (!user) {
+            return res.status(404).send("No se encontró el usuario");
+        }
+
+        // Verificar si la cuenta pertenece al usuario encontrado
+        const account = user.accounts.find(acc => acc.accountNumber === noAccount);
+
         if (!account) {
-            return res.status(404).send("Cuenta no encontrada");
-        }
-
-        const validPassword = bcryptjs.compareSync(pasword, user.password);
-
-        if ( !validPassword ) {
-            return res.status( 400 ).send( ":( contraseña incorrecta" );
-        }
-
-        if (account.alias !== alias) {
-            return res.status(400).send("Alias no coinciden con la cuenta");
-        }
-
-        if (account.dpiNumber !== dpi) {
-            return res.status(400).send("DPI no coinciden con la cuenta");
+            return res.status(404).send("No se encontró la cuenta para este usuario");
         }
 
         // Desactivar la cuenta
         account.state = 'desactivada';
         await account.save();
 
-        return res
-        .status(200)
-        .send(`cuenta desactivada exitosamente`);
+        return res.status(200).send(`Cuenta desactivada exitosamente`);
 
-    } catch (error) {
+    } catch (e) {
         console.log(e);
-        return res
-        .status(403)
-        .send(`no se pudieron encontrar las cuentas`);
+        return res.status(500).send(`Error al desactivar la cuenta`);
     }
-}
+};
+
+export const activateAccount = async (req, res) => {
+    try {
+        const { noAccount, dpi } = req.body;
+
+        if (req.user.roleUser !== 'gerente' && req.user.roleUser !== 'administrador') {
+            return res.status(403).send("Su rol no puede activar cuentas");
+        }
+
+        const user = await User.findOne({ dpi: dpi }).populate('accounts');  // Buscar al usuario por DPI y cargar sus cuentas
+
+        if (!user) {
+            return res.status(404).send("No se encontró el usuario");
+        }
+
+        // Verificar si la cuenta pertenece al usuario encontrado
+        const account = user.accounts.find(acc => acc.accountNumber === noAccount);
+
+        if (!account) {
+            return res.status(404).send("No se encontró la cuenta para este usuario");
+        }
+
+        // Activar la cuenta
+        account.state = 'activa';
+        await account.save();
+
+        return res.status(200).send(`Cuenta activada exitosamente`);
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send(`Error al activar la cuenta`);
+    }
+};

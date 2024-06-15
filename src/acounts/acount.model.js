@@ -1,60 +1,19 @@
 import mongoose, {Schema} from "mongoose";
 
-const MovimientoSchema = mongoose.Schema({
-    tipo: {
-        type: String,
-        enum: ["deposito", "transferenciaEnviada", "transferenciaRecibida"],
-        required: true
-    },
-    monto: {
-        type: Number,
-        required: true
-    },
-    fecha: {
-        type: Date,
-        default: Date.now
-    },
-    descripcion: {
-        type: String
-    },
-    cuentaDestino: {
-        type: String, // Número de cuenta destino en caso de transferencia
-    },
-    cuentaOrigen: {
-        type: String, // Número de cuenta origen en caso de transferencia recibida
-    },
-    operationNumber: {
-        type: String,
-    },
-    
-});
-
 const AccountSchema = mongoose.Schema({
     accountNumber: {
         type:String,
         unique: true
     },
-    name: {
-        type: String,
-    },
-    lastname: {
-        type: String,
-    },
-    dpiNumber: {
-        type: String,
-    },
-    numberCel: {
-        type: String,
-    },
     accountType: {
         type: String,
-        enum: [ "monetaria", "monetariaDolares", "ahorro", "ahorroDolares"]
+        enum: [ "monetaria", "monetariaDolares", "ahorro", "ahorroDolares"],
+        default: "monetaria"
     },
     accountBalance : {
         type: Number,
         default: 0.00,
     },
-    movements: [MovimientoSchema],
     state: {
         type: String,
         enum: ["desactivada","activa"],

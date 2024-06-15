@@ -1,6 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 
-const roles = ['gerente', 'usuario', 'admin'];
+const roles = ['gerente', 'administrador', 'usuario', 'caja'];
 
 const UserSchema = mongoose.Schema({
     dpi: {
@@ -30,9 +30,10 @@ const UserSchema = mongoose.Schema({
     password:{
         type: String,
     },
-    acounts: [{
+    accounts: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Account'
+        ref: 'Account',
+        default:[]
     }],
 });
 

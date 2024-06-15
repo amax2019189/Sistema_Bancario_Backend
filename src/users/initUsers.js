@@ -1,48 +1,135 @@
+import mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs';
-import Users from './user.model.js';
 
-const defaultUsers = [
-    {
-        "email": "amax@gmail.com",
-        "name": "Alejandro",
-        "lastname": "Max",
-        "dpi": "1655424890101",
-        "numbercel": "10101010",
-        "img": "Foto de Perfil",
-        "password": "123456"
-    },
-    {
-        "email": "bmendoza@gmail.com",
-        "name": "Brandon",
-        "lastname": "Mendoza",
-        "dpi": "5645445450101",
-        "numbercel": "10101010",
-        "img": "Foto de Perfil",
-        "password": "123456"
-    },
-];
+// Importar el modelo de usuario
+import UserModel from './user.model.js';
 
-const createDefaultUsers = async () => {
+async function connectToMongo() {
     try {
-        for (const userData of defaultUsers) {
-            const existingUser = await Users.findOne({ email: userData.email});
-            if (!existingUser) {
-                const encryptedPassword = bcryptjs.hashSync(userData.password);
-                await Users.create({
-                    ...userData,
-                    password: encryptedPassword,
-                })
-            }
+        await mongoose.connect(process.env.URI_MONGO || 'mongodb://localhost:27017/SistemaBancario', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('MongoDB conectado exitosamente.');
+    } catch (error) {
+        console.error('Error al conectar a MongoDB:', error.message);
+        process.exit(1); // Termina la aplicación si no se puede conectar a MongoDB
+    }
+}
+
+async function addUser(user) {
+    try {
+        const existingUser = await UserModel.findOne({ email: user.email });
+
+        if (!existingUser) {
+            const salt = await bcryptjs.genSalt(10);
+            const hashedPassword = await bcryptjs.hash(user.password, salt);
+
+            await UserModel.create({
+                email: user.email,
+                name: user.name,
+                lastname: user.lastname,
+                roleUser: user.roleUser,
+                dpi: user.dpi,
+                numbercel: user.numbercel,
+                img: user.img,
+                password: hashedPassword
+            });
+
+            console.log(`Added user: ${user.email}`);
+        } else {
+            console.log(`exists user: ${user.email}`);
         }
     } catch (error) {
-        console.error('Error creating default users:', error);
+        console.error(`Error adding user with email ${user.email}:`, error.message);
     }
-};
+}
 
-createDefaultUsers()
-    .then(() => {
-        console.log('Default user setup completed.');
-    })
-    .catch((error) => {
-        console.log('Error in default users setup:', error);
-    });
+async function addUsers() {
+    await connectToMongo();
+
+    const usersToInsert = [
+        {
+            email: "amax@gmail.com",
+            name: "Alejandro",
+            lastname: "Max",
+            roleUser: "administrador",
+            dpi: "1655424890101",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            password: "123456"
+        },
+        {
+            email: "bmendoza@gmail.com",
+            name: "Brandon",
+            lastname: "Mendoza",
+            roleUser: "administrador",
+            dpi: "5645445450101",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            password: "123456"
+        },
+        {
+            email: "epereira@gmail.com",
+            name: "Edson",
+            lastname: "Pereira",
+            password: "123456",
+            roleUser: "administrador",
+            dpi: "1591597894625",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            stateUser: true,
+        },
+        {
+            email: "lvaquin@gmail.com",
+            name: "Luis",
+            lastname: "Vaquin",
+            password: "123456",
+            roleUser: "administrador",
+            dpi: "7319468245679",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            stateUser: true,
+        },
+        {
+            email: "eramirez@gmail.com",
+            name: "Ramirez",
+            lastname: "Evan",
+            password: "123456",
+            roleUser: "administrador",
+            dpi: "1597534568520",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            stateUser: true,
+        },
+        {
+            email: "gerente@gmail.com",
+            name: "gerente",
+            lastname: "gerente",
+            password: "123456",
+            roleUser: "gerente",
+            dpi: "7531594568524",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            stateUser: true,
+        },
+        {
+            email: "caja@gmail.com",
+            name: "caja",
+            lastname: "caja",
+            password: "123456",
+            roleUser: "caja",
+            dpi: "1472583697891",
+            numbercel: "10101010",
+            img: "Foto de Perfil",
+            stateUser: true,
+        }
+
+    ];
+
+    for (const user of usersToInsert) {
+        await addUser(user);
+    }
+}
+
+export default addUsers;

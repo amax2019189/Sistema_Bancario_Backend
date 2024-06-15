@@ -1,10 +1,11 @@
 import bcryptjs from 'bcryptjs';
 import User from '../users/user.model.js';
+import Account from '../acounts/acount.model.js';
 import { generarJWT } from '../helpers/generate-JWT.js';
 
 export const register = async (req, res) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img} = req.body;
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img } = req.body;
         const encryptPassword = bcryptjs.hashSync(password);
 
         const user = await User.create({
@@ -16,15 +17,25 @@ export const register = async (req, res) => {
             email: email.toLowerCase(),
             password: encryptPassword,
             roleUser,
+            accounts: []
         });
+
+        const account = await Account.create({
+            accountType: "monetaria", // O cualquier otro tipo predeterminado
+            accountBalance: 0.00,
+            state: "activa"
+        });
+
+        user.accounts.push(account._id);
+        await user.save();
 
         return res.status(200).json({
             msg: "|-- user has been added to database --|",
             userDetails: {
                 user: user.name,
-                password: user.password,
                 email: user.email,
-                roleUser,
+                roleUser: user.roleUser,
+                accountNumber: account.accountNumber
             },
         });
 
@@ -32,7 +43,7 @@ export const register = async (req, res) => {
         console.log(e);
         return res.status(500).send("Failed to register user");
     }
-}
+};
 
 export const login = async (req, res) => {
     try {
