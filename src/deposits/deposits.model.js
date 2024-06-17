@@ -17,12 +17,17 @@ const DepositSchema = mongoose.Schema({
     description: {
         type: String
     },
+    
     operationNumber: {
         type: String,
         unique: true
     },
     creatorDeposit: {
         type: String,
+    },
+    exchangeRate: {
+        type: String,
+        enum: ["quetzales","dolares"]
     }
 });
 

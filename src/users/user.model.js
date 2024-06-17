@@ -1,5 +1,15 @@
 import mongoose, {Schema} from "mongoose";
 
+const FavoriteSchema = mongoose.Schema({
+    accountNumber: {
+        type: String,
+        required: true
+    },
+    alias: {
+        type: String,
+    },
+});
+
 const roles = ['gerente', 'administrador', 'usuario', 'caja'];
 
 const UserSchema = mongoose.Schema({
@@ -35,6 +45,7 @@ const UserSchema = mongoose.Schema({
         ref: 'Account',
         default:[]
     }],
+    favorites: [FavoriteSchema],
 });
 
 UserSchema.methods.toJSON = function(){

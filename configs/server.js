@@ -8,6 +8,7 @@ import authRoutes from '../src/auth/auth.routes.js'
 import userRoutes from '../src/users/user.routes.js'
 import accountRoutes from '../src/acounts/account.routes.js';
 import depositRoutes from '../src/deposits/deposits.routes.js';
+import transferRoutes from '../src/transfer/transfer.routes.js';
 
  
 class Server {
@@ -18,6 +19,7 @@ class Server {
         this.userPath = '/sistemaBancario/v1/user'
         this.accountPath = '/sistemaBancario/v1/account'
         this.depositPath = '/sistemaBancario/v1/deposit'
+        this.transferPath = '/sistemaBancario/v1/transfer'
         this.conectarDB();
         this.middlewares();
         this.routes();
@@ -42,6 +44,7 @@ class Server {
         this.app.use(this.userPath, userRoutes);
         this.app.use(this.accountPath, accountRoutes);
         this.app.use(this.depositPath, depositRoutes);
+        this.app.use(this.transferPath, transferRoutes);
     };
  
     listen() {

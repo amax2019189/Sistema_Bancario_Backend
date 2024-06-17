@@ -2,30 +2,47 @@ import mongoose from "mongoose";
 import Deposit from './deposits.model.js';
 import Account from '../acounts/acount.model.js';
 
+const EXCHANGE_RATE = 7.75;
+
+// Función para realizar un depósito
 export const makeDeposit = async (req, res) => {
-    const { accountNumberDestino, amount, description } = req.body;
+    const { accountNumberDestino, amount, description, exchangeRate } = req.body;
 
     try {
-
         if (req.user.roleUser !== 'gerente' && req.user.roleUser !== 'administrador' && req.user.roleUser !== 'caja') {
             return res.status(403).send("Su rol no puede realizar depositos");
         }
 
-        // Crear el depósito
-        const deposit = await Deposit.create({
-            accountNumberDestino,
-            amount,
-            description,
-            creatorDeposit: req.user.email
-        });
-
-        // Actualizar el saldo de la cuenta destinataria
+        // Fetch the account details to determine the account type
         const account = await Account.findOne({ accountNumber: accountNumberDestino });
         if (!account) {
             return res.status(404).send("Cuenta destino no encontrada");
         }
 
-        account.accountBalance += amount;
+        let finalAmount = amount;
+
+        // Perform currency conversion based on account type
+        if (exchangeRate === "dolares") {
+            if (account.accountType === "ahorro" || account.accountType === "monetaria") {
+                finalAmount = amount * EXCHANGE_RATE; // Convert dollars to quetzales
+            }
+        } else if (exchangeRate === "quetzales") {
+            if (account.accountType === "monetariaDolares" || account.accountType === "ahorroDolares") {
+                finalAmount = amount / EXCHANGE_RATE; // Convert quetzales to dollars
+            }
+        }
+
+        // Create the deposit
+        const deposit = await Deposit.create({
+            accountNumberDestino,
+            amount: finalAmount,
+            description,
+            creatorDeposit: req.user.email,
+            exchangeRate
+        });
+
+        // Update the account balance
+        account.accountBalance += finalAmount;
         await account.save();
 
         return res.status(200).json({

@@ -29,3 +29,4 @@ export const validDpi = async (dpiNumber = '') => {
         throw new Error('The DPI is not valid');
     }
 }
+

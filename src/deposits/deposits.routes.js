@@ -9,7 +9,9 @@ const router = Router();
 router.post(
     "/makeDeposit",
     [
+        check("accountNumberDestino", "La cuenta destino es obligatoria").not().isEmpty(),
         check("amount", "El monto es obligatorio").not().isEmpty(),
+        check("exchangeRate", "El tipo de cambio es obligatorio").not().isEmpty(),
         validateFields,
         validarJWT,
     ],
