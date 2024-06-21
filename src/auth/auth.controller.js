@@ -51,7 +51,7 @@ export const login = async ( req, res ) => {
 
         console.log( 'Received login request for email:', email );
 
-        const user = await User.findOne( { email: email.toLowerCase() } );
+        const user = await User.findOne( { email: email.toLowerCase() } ).populate('accounts');
 
         if ( !user ) {
             console.log( 'User not found:', email );
@@ -77,8 +77,11 @@ export const login = async ( req, res ) => {
         res.status( 200 ).json( {
             msg: "Login Ok!!!",
             userDetails: {
-                username: user.username,
+                name: user.name,
+                lastname: user.lastname,
+                email: user.email,
                 roleUser: user.roleUser,
+                accounts: user.accounts,
                 token: token,
             },
         } );
@@ -87,4 +90,4 @@ export const login = async ( req, res ) => {
         console.error( 'Error during login:', e );
         res.status( 500 ).send( `Comuniquese con el administrador. Error details: ${e.message}` );
     }
-}
+};
