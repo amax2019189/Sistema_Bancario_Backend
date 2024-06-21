@@ -61,20 +61,19 @@ export const reverseDeposit = async (req, res) => {
     const { operationNumber } = req.body;
 
     try {
-
-        const deposit = await Deposit.findOne(operationNumber);
+        const deposit = await Deposit.findOne({ operationNumber });
         if (!deposit) {
             return res.status(404).send("Depósito no encontrado");
         }
 
         if (req.user.email !== deposit.creatorDeposit) {
-            return res.status(404).send("No realizaste el deposito");
+            return res.status(403).send("No realizaste el depósito");
         }
 
         // Verificar si el depósito puede ser revertido (dentro de 1 minuto)
         const now = new Date();
-        const depositTime = deposit.date.getTime();
-        if (now - depositTime > 60000) { // 60000 milisegundos = 1 minuto
+        const depositTime = new Date(deposit.date).getTime();
+        if (now.getTime() - depositTime > 2 * 60000) { // 2 * 60000 milisegundos = 2 minutos
             return res.status(403).send("Ya no se puede revertir este depósito");
         }
 
@@ -87,7 +86,8 @@ export const reverseDeposit = async (req, res) => {
         account.accountBalance -= deposit.amount;
         await account.save();
 
-        await deposit.remove();
+        // Eliminar el depósito usando deleteOne
+        await Deposit.deleteOne({ _id: deposit._id });
 
         return res.status(200).json({
             msg: "Depósito revertido exitosamente",
@@ -95,7 +95,7 @@ export const reverseDeposit = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error al revertir depósito:", error.message);
+        console.error("Error al revertir depósito:" + error.message);
         return res.status(500).send("Error al revertir depósito");
     }
 };
@@ -103,6 +103,7 @@ export const reverseDeposit = async (req, res) => {
 // Función para editar un depósito
 export const editDeposit = async (req, res) => {
     const { operationNumber, amount, description } = req.body;
+    
 
     try {
 

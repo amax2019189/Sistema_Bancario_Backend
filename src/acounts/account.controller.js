@@ -54,7 +54,7 @@ export const getAccountsUser = async (req, res) => {
         return res.status(500).send("Error al obtener las cuentas del usuario");
     }
 };
-
+    
 export const desactivateAccount = async (req, res) => {
     try {
         const { noAccount, dpi } = req.body;

@@ -40,11 +40,17 @@ const LoanSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    withdrawal: {
+        type: String,
+        required: true
+        
+    },
     withdrawCode: {
         type: String,
         default: shortid.generate,
         unique: true
-    }
+    },
+
 }, { timestamps: true });
 
 export default mongoose.model('Loan', LoanSchema);
