@@ -108,7 +108,7 @@ export const editDeposit = async (req, res) => {
     try {
 
         // Buscar el depósito por su ID
-        const deposit = await Deposit.findOne(operationNumber);
+        const deposit = await Deposit.findOne({operationNumber});
         if (!deposit) {
             return res.status(404).send("Depósito no encontrado");
         }
