@@ -6,3 +6,5 @@ export const validRol = async (rol) => {
         return false;
     }
 }
+
+export const 
