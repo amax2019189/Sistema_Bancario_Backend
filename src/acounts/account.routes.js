@@ -2,7 +2,14 @@ import { Router } from "express";
 import { check } from "express-validator";
 import { validateFields } from "../middlewares/validateFields.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
-import { activateAccount, createAccount, desactivateAccount, getAccountsUser } from "./account.controller.js";
+import { 
+    activateAccount, 
+    createAccount, 
+    desactivateAccount, 
+    getAccountsUser, 
+    getUserAccountsDetailsByEmail, 
+    getAccountDetailsByIdForUser 
+} from "./account.controller.js";
 
 const router = Router();
 
@@ -48,5 +55,8 @@ router.put(
     ],
     activateAccount
 );
+
+router.get('/user/accounts', validarJWT, getUserAccountsDetailsByEmail);
+router.get('/:id', validarJWT, getAccountDetailsByIdForUser);
 
 export default router;

@@ -42,8 +42,8 @@ const LoanSchema = new mongoose.Schema({
     },
     withdrawal: {
         type: String,
-        required: true
-        
+        required: true,
+        enum:["cuenta", "caja"]
     },
     withdrawCode: {
         type: String,

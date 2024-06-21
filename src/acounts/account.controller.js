@@ -1,5 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import Account from "./acount.model.js";
+import Deposit from '../deposits/deposits.model.js'
+import Transfer from '../transfer/transfer.model.js'
 import User from "../users/user.model.js";
 import {validDpi, validType} from "../helpers/db-validators.js"
 
@@ -118,5 +120,83 @@ export const activateAccount = async (req, res) => {
     } catch (e) {
         console.log(e);
         return res.status(500).send(`Error al activar la cuenta`);
+    }
+};
+
+
+export const getUserAccountsDetailsByEmail = async (req, res) => {
+    try {
+
+        const user = await User.findOne({ email:req.user.email }).populate('accounts');
+
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        const accountDetails = await Promise.all(user.accounts.map(async (account) => {
+            const deposits = await Deposit.find({ accountNumberDestino: account.accountNumber });
+            const transfersSent = await Transfer.find({ accountNumberOrigen: account.accountNumber });
+            const transfersReceived = await Transfer.find({ accountNumberDestino: account.accountNumber });
+
+            return {
+                accountNumber: account.accountNumber,
+                balance: account.accountBalance,
+                deposits,
+                transfersSent,
+                transfersReceived
+            };
+        }));
+
+        return res.status(200).json(accountDetails);
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener los detalles de las cuentas del usuario");
+    }
+};
+
+export const getAccountDetailsByIdForUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Buscar el usuario por email
+        const user = await User.findOne({ email: req.user.email }).populate('accounts');
+
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        // Buscar la cuenta específica por ID
+        const account = await Account.findById(id);
+
+        if (!account) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        // Verificar si la cuenta pertenece al usuario
+        const userAccount = user.accounts.find(acc => acc._id.toString() === id);
+
+        if (!userAccount) {
+            return res.status(403).send("La cuenta no pertenece al usuario autenticado");
+        }
+
+        // Obtener todos los movimientos asociados a la cuenta
+        const deposits = await Deposit.find({ accountNumberDestino: account.accountNumber });
+        const transfersSent = await Transfer.find({ accountNumberOrigen: account.accountNumber });
+        const transfersReceived = await Transfer.find({ accountNumberDestino: account.accountNumber });
+
+        return res.status(200).json({
+            accountNumber: account.accountNumber,
+            accountType: account.accountType,
+            balance: account.accountBalance,
+            state: account.state,
+            deposits,
+            transfersSent,
+            transfersReceived
+        });
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener los detalles de la cuenta");
     }
 };
