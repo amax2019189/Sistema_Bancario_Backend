@@ -35,7 +35,6 @@ export const register = async ( req, res ) => {
                 user: user.name,
                 email: user.email,
                 roleUser: user.roleUser,
-                accountNumber: account.accountNumber
             },
         } );
 

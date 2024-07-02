@@ -14,6 +14,12 @@ const LoanSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    state: {
+        type: String,
+        enum:["aprovada","pendiente", "denegada"],
+        required: true,
+        default:"pendiente"
+    },
     amount: {
         type: Number,
         required: true
@@ -50,7 +56,16 @@ const LoanSchema = new mongoose.Schema({
         default: shortid.generate,
         unique: true
     },
-
+    withdrawCodeUsed: {
+        type: Boolean,
+        default: false
+    },
+    approver:{
+        type: String,
+    },
+    account:{
+        type: String,
+    }
 }, { timestamps: true });
 
 export default mongoose.model('Loan', LoanSchema);
