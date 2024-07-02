@@ -1,4 +1,4 @@
-import Loan from './loan.model.js';
+import Loan from '../loan/loan.model.js';
 import Account from '../acounts/acount.model.js';
 
 export const approveLoan = async (req, res) => {

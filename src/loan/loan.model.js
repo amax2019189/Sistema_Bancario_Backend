@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import shortid from 'shortid';
+import { v4 as uuidv4 } from 'uuid';
 
 const LoanSchema = new mongoose.Schema({
     userDPI: {
@@ -53,7 +53,7 @@ const LoanSchema = new mongoose.Schema({
     },
     withdrawCode: {
         type: String,
-        default: shortid.generate,
+        default: uuidv4, // Use uuidv4 to generate unique codes automatically
         unique: true
     },
     withdrawCodeUsed: {
