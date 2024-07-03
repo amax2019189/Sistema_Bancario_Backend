@@ -3,6 +3,7 @@ import { check } from "express-validator";
 import { validateFields } from "../middlewares/validateFields.js";
 import { register, login } from "../auth/auth.controller.js";
 import { existEmail } from "../helpers/db-validators.js";
+import { validRolAdmin } from "../middlewares/validateRol.js"
 
 const router = Router();
 
@@ -36,5 +37,10 @@ router.post(
   ],
   login
 );
+
+router.post(
+  "/registerAdmin",
+  validRolAdmin
+)
 
 export default router;
