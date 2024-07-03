@@ -1,16 +1,16 @@
-import express from 'express';
-import { withdrawLoan } from './caja.controller.js';
+import { Router } from "express";
+import { check } from "express-validator";
+import { validateFields } from "../middlewares/validateFields.js";
+import { validarJWT } from "../middlewares/validar-jwt.js";
+import { payLoan, withdrawLoan } from './bankCash.controller.js';
+import {approveLoan, getApprovedLoans, getNonApprovedLoans} from './gerenteBank.controller.js'
 
-const router = express.Router();
+const router = Router();
 
-// Middleware to check for 'caja' role
-const checkCajaRole = (req, res, next) => {
-    if (req.user.roleUser !== 'caja') {
-        return res.status(403).send("Su rol no tiene permiso para realizar esta acción");
-    }
-    next();
-};
-
-router.post('/caja/withdraw', checkCajaRole, withdrawLoan);
+router.post('/withdrawLoan', validarJWT, withdrawLoan);
+router.post('/payloan', validarJWT, payLoan);
+router.put('/approveLoan', validarJWT, approveLoan);
+router.get('/getApproved', validarJWT, getApprovedLoans);
+router.get('/getNonApproved', validarJWT, getNonApprovedLoans)
 
 export default router;

@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 
 const CajaSchema = new mongoose.Schema({
+    user: {
+        type: String,
+    },
     accountNumber: {
         type: String,
-        required: true
     },
     amount: {
         type: Number,
