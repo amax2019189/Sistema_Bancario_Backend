@@ -200,3 +200,19 @@ export const getAccountDetailsByIdForUser = async (req, res) => {
         return res.status(500).send("Error al obtener los detalles de la cuenta");
     }
 };
+
+
+export const accountbalance = async (req, res) => {
+    try {
+        
+        const account = await Account.findById(req.params.id);
+        if (!account) {
+            return res.status(404).send({ message: 'Cuenta no encontrada' });
+        }
+        res.send({ saldo: cuenta.saldo });
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Comuniquese con el administrador, no cunenta con saldo.")
+    }
+};
