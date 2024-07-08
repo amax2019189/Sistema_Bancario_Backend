@@ -5,7 +5,7 @@ import { generarJWT } from '../helpers/generate-JWT.js';
 
 export const register = async ( req, res ) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome } = req.body;
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, username } = req.body;
         const encryptPassword = bcryptjs.hashSync( password );
 
         const user = await User.create( {
@@ -16,6 +16,7 @@ export const register = async ( req, res ) => {
             address,
             namework,
             monthlyincome,
+            username,
             img,
             email: email.toLowerCase(),
             password: encryptPassword,
