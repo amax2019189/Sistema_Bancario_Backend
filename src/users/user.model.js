@@ -32,6 +32,15 @@ const UserSchema = mongoose.Schema({
     numbercel: {
         type: Number,
     },
+    address: {
+        type: String,
+    },
+    namwork: {
+        type: String,
+    },
+    monthlyincome: {
+        type: Number,
+    } ,
     roleUser: {
         type: String,
         enum: roles,
