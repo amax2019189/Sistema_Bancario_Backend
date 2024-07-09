@@ -10,12 +10,13 @@ const FavoriteSchema = mongoose.Schema({
     },
 });
 
-const roles = ['gerente', 'administrador', 'usuario', 'caja'];
+const roles = ['gerente', 'administrador', 'usuario', 'caja', 'services'];
 
 const UserSchema = mongoose.Schema({
     dpi: {
         type: String,
     },
+    
     name: {
         type: String,
     },

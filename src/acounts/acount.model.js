@@ -19,7 +19,14 @@ const AccountSchema = mongoose.Schema({
         enum: ["desactivada","activa"],
         default: "activa"
     },
-    
+    accountUse:{
+        type:String,
+        enum: ["personal","empresarial"],
+        default: "Personal"
+    },
+    service:{
+        type:String,
+    }
 })
 
 AccountSchema.pre('save', async function(next) {

@@ -123,6 +123,28 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+        },
+        {
+            email: "services@gmail.com",
+            name: "services",
+            lastname: "services",
+            password: "123456",
+            roleUser: "services",
+            dpi: "7198256487396",
+            numbercel: "73468552",
+            img: "Foto de Perfil",
+            stateUser: true,
+        },
+        {
+            email: "ADMINB@gmail.com",
+            name: "ADMINB",
+            lastname: "ADMINB",
+            password: "123456",
+            roleUser: "administrador",
+            dpi: "103024579819",
+            numbercel: "73468552",
+            img: "Foto de Perfil",
+            stateUser: true,
         }
 
     ];
