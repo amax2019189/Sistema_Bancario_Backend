@@ -23,6 +23,9 @@ const UserSchema = mongoose.Schema({
     lastname: {
         type: String,
     },
+    username: {
+        type: String,
+    },
     img: {
         type: String,
     },
@@ -33,6 +36,15 @@ const UserSchema = mongoose.Schema({
     numbercel: {
         type: Number,
     },
+    address: {
+        type: String,
+    },
+    namwork: {
+        type: String,
+    },
+    monthlyincome: {
+        type: Number,
+    } ,
     roleUser: {
         type: String,
         enum: roles,
