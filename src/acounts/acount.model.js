@@ -1,5 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
+const accountUses = ['Personal', 'Business', 'Other'];
+
 const AccountSchema = mongoose.Schema({
     accountNumber: {
         type:String,
@@ -19,10 +21,10 @@ const AccountSchema = mongoose.Schema({
         enum: ["desactivada","activa"],
         default: "activa"
     },
-    accountUse:{
-        type:String,
-        enum: ["personal","empresarial"],
-        default: "Personal"
+    accountUse: {
+        type: String,
+        enum: accountUses, // Enum para validar los valores de accountUse
+        default: 'Personal',
     },
     service:{
         type:String,

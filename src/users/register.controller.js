@@ -3,15 +3,19 @@ import Account from '../acounts/acount.model.js';
 
 export const registerAdmin = async (req, res) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img } = req.body;
+        const { email, name, lastname, password, roleUser, companyCode, numbercel, img, address, namework, monthlyincome, username, accountUse, accountType } = req.body;
         const encryptPassword = bcryptjs.hashSync( password );
 
         const user = await User.create({
             name,
             lastname,
-            dpi,
+            companyCode:dpi,
             numbercel,
             img,
+            address,
+            namework,
+            monthlyincome,
+            username,
             email: email.toLowerCase(),
             password: encryptPassword,
             roleUser,
@@ -19,9 +23,11 @@ export const registerAdmin = async (req, res) => {
         });
 
         const account = await Account.create( {
-            accountType: "monetaria",
+            accountType,
             accountBalance: 0.00,
-            state: "activa"
+            state: "activa",
+            accountUse,
+            user: user._id
         } );
 
         user.accounts.push( account._id );

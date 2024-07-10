@@ -5,7 +5,7 @@ import { generarJWT } from '../helpers/generate-JWT.js';
 
 export const register = async ( req, res ) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, username } = req.body;
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, username, accountUse  } = req.body;
         const encryptPassword = bcryptjs.hashSync( password );
 
         const user = await User.create( {
@@ -24,11 +24,13 @@ export const register = async ( req, res ) => {
             accounts: []
         } );
 
-        const account = await Account.create( {
+        const account = await Account.create({
             accountType: "monetaria", // O cualquier otro tipo predeterminado
             accountBalance: 0.00,
-            state: "activa"
-        } );
+            state: "activa",
+            accountUse, // Valor predeterminado válido
+            user: user._id
+        });
 
         user.accounts.push( account._id );
         await user.save();

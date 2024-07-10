@@ -5,7 +5,6 @@ import { validarJWT } from "../middlewares/validar-jwt.js";
 import { 
     activateAccount, 
     createAccount,
-    createAccountServices,
     desactivateAccount, 
     getAccountsUser, 
     getUserAccountsDetailsByEmail, 
@@ -57,18 +56,6 @@ router.put(
     ],
     activateAccount
 );
-
-router.post(
-    "/createAccountService",
-    [
-        check("accountType", "El tipo de cuenta es obligatorio").not().isEmpty(),
-        check("accountUse", "El tipo de cuenta es obligatorio").not().isEmpty(),
-        check("service", "El tipo de cuenta es obligatorio").not().isEmpty(),
-        validateFields,
-        validarJWT,
-    ],
-createAccountServices,
-)
 
 router.get('/user/accounts', validarJWT, getUserAccountsDetailsByEmail);
 router.get('/:id', validarJWT, getAccountDetailsByIdForUser);

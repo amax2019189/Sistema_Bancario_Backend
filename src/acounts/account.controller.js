@@ -201,46 +201,6 @@ export const getAccountDetailsByIdForUser = async (req, res) => {
     }
 };
 
-export const createAccountServices = async(req, res) => {
-    try {
-        const { accountType, accountUse, service} = req.body;
-        const user = await User.findOne({dpi:"7198256487396"});
-        if (!user) {
-            return res.status(404).send("Usuario no encontrado");
-        }
-
-        if (req.user.roleUser !== 'gerente' && req.user.roleUser !== 'administrador') {
-            return res.status(403).send("Su rol no puede crear cuentas");
-        }
-
-        if(accountUse !== 'personal' && accountUse !== 'personal'){
-            return res.status(403).send("Su rol no puede crear cuentas");
-        }
-
-        // Validar DPI
-        await validDpi(dpiNumber);
-
-        // Validar tipo de cuenta
-        await validType(accountType);
-        
-        const account = new Account(accountType, accountUse, service);
-        await account.save();
-
-        user.accounts.push(account._id);
-        await user.save();
-
-        return res
-        .status(200)
-        .send(`cuenta creada exitosamente`);
-
-    } catch (e) {
-        console.log(e);
-        return res
-        .status(403)
-        .send(`contacta al administrador`+"error en account");
-    };
-}
-
 export const accountbalance = async (req, res) => {
     try {
         

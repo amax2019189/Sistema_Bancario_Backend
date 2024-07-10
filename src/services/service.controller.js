@@ -1,8 +1,10 @@
 import { response, request } from "express";
 import User from "../users/user.model.js";
-import Account from "./acount.model.js";
+import Account from "../acounts/acount.model.js";
 import Service from "./service.model.js";
 import Transfer from "../transfer/transfer.model.js"
+import UserService from "./userService.model.js"
+import bcryptjs from 'bcryptjs';
 
 const EXCHANGE_RATE = 7.5; // Define a constant exchange rate
 
@@ -18,8 +20,20 @@ export const payService = async (req, res) => {
         }
 
         // Verificar si la cuenta origen pertenece al usuario
-        if (accountOrigen.user.toString() !== req.user.uid) {
+        const user = await User.findById(req.user.uid);
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        // Verificar si la cuenta origen está en la lista de cuentas del usuario
+        const isAccountOwnedByUser = user.accounts.some(accountId => accountId.equals(accountOrigen._id));
+        if (!isAccountOwnedByUser) {
             return res.status(403).send("No eres propietario de la cuenta origen");
+        }
+
+        // Verificar que el accountUse de la cuenta destino sea "Business"
+        if (accountDestino.accountUse !== 'Business') {
+            return res.status(400).send("La cuenta destino debe ser de uso 'Business'");
         }
 
         if (amount > 2000) {
@@ -74,7 +88,6 @@ export const payService = async (req, res) => {
         });
 
         // Registrar el servicio
-        const user = await User.findById(req.user.uid);
         const service = new Service({
             service: serviceType,
             noAccount: accountNumberDestino,
@@ -120,3 +133,51 @@ export const getPaidServices = async (req, res) => {
         return res.status(500).send("Error al obtener los servicios pagados");
     }
 };
+
+export const registerService = async (req, res) => {
+    try {
+        const { email, companyCode, companyName, username,  numbercel, address, namwork, password, roleUser, monthlyincome, img, accountType} = req.body;
+        const encryptPassword = bcryptjs.hashSync( password );
+
+        const user = await UserService.create({
+            companyName,
+            dpi:companyCode,
+            numbercel,
+            img,
+            address,
+            namwork,
+            monthlyincome,
+            username,
+            email: email.toLowerCase(),
+            password: encryptPassword,
+            roleUser,
+            accounts: []
+        });
+
+        const account = await Account.create( {
+            accountType,
+            accountBalance: 0.00,
+            state: "activa",
+            accountUse:"Business",
+            user: user._id
+        } );
+
+        user.accounts.push( account._id );
+        await user.save();
+
+        return res.status( 200 ).json( {
+            msg: "|-- user has been added to database --|",
+            userDetails: {
+                user: user.companyName,
+                email: user.email,
+                roleUser: user.roleUser,
+            },
+        } );
+        // Aqui se creo una validaciòn especial para que se pueda cambiar el rol de admin y caja
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Failed to register user");
+    }
+}
+
