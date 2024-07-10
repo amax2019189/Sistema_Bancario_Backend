@@ -1,5 +1,6 @@
 import bcryptjs from 'bcryptjs';
 import User from '../users/user.model.js';
+import UserService from "../services/userService.model.js"
 import Account from '../acounts/acount.model.js';
 import { generarJWT } from '../helpers/generate-JWT.js';
 
@@ -50,49 +51,53 @@ export const register = async ( req, res ) => {
     }
 };
 
-export const login = async ( req, res ) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log( 'Received login request for email:', email );
+        console.log('Received login request for email:', email);
 
-        const user = await User.findOne( { email: email.toLowerCase() } ).populate('accounts');
-
-        if ( !user ) {
-            console.log( 'User not found:', email );
-            return res.status( 400 ).send( `Wrong credentials, ${email} doesn´t exist in database` );
+        // Try to find the user in both collections
+        let user = await User.findOne({ email: email.toLowerCase() }).populate('accounts');
+        if (!user) {
+            user = await UserService.findOne({ email: email.toLowerCase() }).populate('accounts');
         }
 
-        if ( !user.password ) {
-            console.log( 'User has no password:', user );
-            return res.status( 500 ).send( 'User password is undefined' );
+        if (!user) {
+            console.log('User not found:', email);
+            return res.status(400).send(`Wrong credentials, ${email} doesn´t exist in database`);
         }
 
-        const validPassword = bcryptjs.compareSync( password, user.password );
-
-        if ( !validPassword ) {
-            console.log( 'Invalid password for user:', email );
-            return res.status( 400 ).send( "Wrong password" );
+        if (!user.password) {
+            console.log('User has no password:', user);
+            return res.status(500).send('User password is undefined');
         }
 
-        const token = await generarJWT( user.id, user.email, user.roleUser, user.username );
+        const validPassword = bcryptjs.compareSync(password, user.password);
 
-        console.log( 'Login successful for user:', email );
+        if (!validPassword) {
+            console.log('Invalid password for user:', email);
+            return res.status(400).send("Wrong password");
+        }
 
-        res.status( 200 ).json( {
+        const token = await generarJWT(user.id, user.email, user.roleUser, user.username);
+
+        console.log('Login successful for user:', email);
+
+        res.status(200).json({
             msg: "Login Ok!!!",
             userDetails: {
-                name: user.name,
-                lastname: user.lastname,
+                name: user.name || user.companyName,
+                lastname: user.lastname || "",
                 email: user.email,
                 roleUser: user.roleUser,
                 accounts: user.accounts,
                 token: token,
             },
-        } );
+        });
 
-    } catch ( e ) {
-        console.error( 'Error during login:', e );
-        res.status( 500 ).send( `Comuniquese con el administrador. Error details: ${e.message}` );
+    } catch (e) {
+        console.error('Error during login:', e);
+        res.status(500).send(`Comuniquese con el administrador. Error details: ${e.message}`);
     }
 };
