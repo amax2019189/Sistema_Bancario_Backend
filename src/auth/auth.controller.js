@@ -15,7 +15,7 @@ export const register = async ( req, res ) => {
             dpi,
             numbercel,
             address,
-            namework,
+            namwork:namework,
             monthlyincome,
             username,
             img,
