@@ -59,6 +59,11 @@ const UserSchema = mongoose.Schema({
         default:[]
     }],
     favorites: [FavoriteSchema],
+    
+    birthdate: {
+        type: Date,
+        required: true,
+    },
 });
 
 UserSchema.methods.toJSON = function(){
