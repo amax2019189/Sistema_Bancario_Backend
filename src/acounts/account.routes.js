@@ -9,7 +9,10 @@ import {
     getAccountsUser, 
     getUserAccountsDetailsByEmail, 
     getAccountDetailsByIdForUser,
-    accountbalance
+    accountbalance,
+    toggleFavoriteAccount,
+    removeFavoriteAccount,
+    getFavoriteAccounts
 } from "./account.controller.js";
 
 const router = Router();
@@ -19,17 +22,20 @@ router.post(
     [
         check("dpiNumber", "El dpi es obligatorio").not().isEmpty(),
         check("dpiNumber", "El dpi debe contener 13 caracteres").isLength({
-        min: 13, max:13}),
+            min: 13, max:13
+        }),
         check("accountType", "El tipo de cuenta es obligatorio").not().isEmpty(),
         validateFields,
         validarJWT,
     ],
-createAccount,
-)
+    createAccount
+);
 
 router.get(
-    "/myAccount",validarJWT,getAccountsUser
-)
+    "/myAccount",
+    validarJWT,
+    getAccountsUser
+);
 
 router.delete(
     "/deleteAccount",
@@ -38,7 +44,8 @@ router.delete(
         check("noAccount", "El Numero de cuenta es obligatorio").not().isEmpty(),
         check("dpi", "El dpi es obligatorio").not().isEmpty(),
         check("dpi", "El dpi debe contener 13 caracteres").isLength({
-            min: 13, max:13}),
+            min: 13, max:13
+        }),
         validateFields,
     ],
     desactivateAccount
@@ -51,7 +58,8 @@ router.put(
         check("noAccount", "El Numero de cuenta es obligatorio").not().isEmpty(),
         check("dpi", "El dpi es obligatorio").not().isEmpty(),
         check("dpi", "El dpi debe contener 13 caracteres").isLength({
-            min: 13, max:13}),
+            min: 13, max:13
+        }),
         validateFields,
     ],
     activateAccount
@@ -60,5 +68,24 @@ router.put(
 router.get('/user/accounts', validarJWT, getUserAccountsDetailsByEmail);
 router.get('/:id', validarJWT, getAccountDetailsByIdForUser);
 router.get('/account/:id/saldo', accountbalance);
+
+// Nuevas rutas para manejar favoritos
+router.put(
+    '/account/:id/favorite',
+    validarJWT,
+    toggleFavoriteAccount
+);
+
+router.put(
+    '/account/:id/unfavorite',
+    validarJWT,
+    removeFavoriteAccount
+);
+
+router.get(
+    '/favorite/accounts',
+    validarJWT,
+    getFavoriteAccounts
+);
 
 export default router;
