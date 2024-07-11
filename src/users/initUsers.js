@@ -32,16 +32,10 @@ async function addUser ( user ) {
                 roleUser: user.roleUser,
                 dpi: user.dpi,
                 numbercel: user.numbercel,
-                birthdate: user.birthdate,
                 img: user.img,
-<<<<<<< HEAD
                 password: hashedPassword,
                 birthdate: user.birthdate,
             });
-=======
-                password: hashedPassword
-            } );
->>>>>>> 922980dda9751f87b4143d813fc06140685ee1c6
 
             console.log( `Added user: ${user.email}` );
         } else {
@@ -78,14 +72,9 @@ async function addUsers () {
             dpi: "5645445450101",
             numbercel: "10101010",
             img: "Foto de Perfil",
-<<<<<<< HEAD
             password: "123456",
             birthdate: "2005-03-01",
             stateUser: true,
-=======
-            birthdate: "1999/01/01",
-            password: "123456"
->>>>>>> 922980dda9751f87b4143d813fc06140685ee1c6
         },
         {
             email: "epereira@gmail.com",
