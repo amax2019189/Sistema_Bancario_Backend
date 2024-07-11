@@ -106,9 +106,9 @@ export const login = async ( req, res ) => {
                 address: user.address,
                 birthdate: user.birthdate,
                 roleUser: user.roleUser,
-                accounts: user.accounts,
-                token: token,
+                accounts: user.accounts
             },
+            token: token,
         } );
 
     } catch ( e ) {
@@ -116,3 +116,4 @@ export const login = async ( req, res ) => {
         res.status( 500 ).send( `Comuniquese con el administrador. Error details: ${e.message}` );
     }
 };
+
