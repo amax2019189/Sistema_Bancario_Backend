@@ -55,7 +55,7 @@ export const payService = async (req, res) => {
 
         // Validar que el saldo de la cuenta origen sea suficiente
         if (accountOrigen.accountBalance < amount) {
-            return res.status(400).send("Saldo insuficiente");
+            return res.status(400).send("Saldo insuficiente" + finalAmount);
         }
 
         // Validar que el usuario no exceda el límite de transferencia diaria
@@ -116,18 +116,19 @@ export const payService = async (req, res) => {
 
 export const getPaidServices = async (req, res) => {
     try {
-        const services = await Service.find({ "user.dpi": req.user.dpi });
-
-        if (!services.length) {
-            return res.status(404).json({
-                msg: "No se encontraron servicios pagados"
-            });
+        const user = await User.findById(req.user.uid);
+        
+        if (!user) {
+            return res.status(404).json({ msg: "Usuario no encontrado" });
         }
 
-        return res.status(200).json({
-            msg: "Servicios pagados encontrados",
-            services
-        });
+        const services = await Service.find({ "user.dpi": user.dpi });
+
+        if (!services.length) {
+            return res.status(404).json({ msg: "No se encontraron servicios pagados" });
+        }
+
+        return res.status(200).json({ msg: "Servicios pagados encontrados", services });
     } catch (error) {
         console.error("Error al obtener los servicios pagados:", error.message);
         return res.status(500).send("Error al obtener los servicios pagados");
@@ -136,12 +137,12 @@ export const getPaidServices = async (req, res) => {
 
 export const registerService = async (req, res) => {
     try {
-        const { email, companyCode, companyName, username,  numbercel, address, namwork, password, roleUser, monthlyincome, img, accountType} = req.body;
-        const encryptPassword = bcryptjs.hashSync( password );
+        const { email, companyCode, companyName, username, numbercel, address, namwork, password, roleUser, monthlyincome, img, accountType } = req.body;
+        const encryptPassword = bcryptjs.hashSync(password);
 
         const user = await UserService.create({
             companyName,
-            dpi:companyCode,
+            dpi: companyCode,
             numbercel,
             img,
             address,
@@ -154,25 +155,25 @@ export const registerService = async (req, res) => {
             accounts: []
         });
 
-        const account = await Account.create( {
+        const account = await Account.create({
             accountType,
             accountBalance: 0.00,
             state: "activa",
-            accountUse:"Business",
+            accountUse: "Business",
             user: user._id
-        } );
+        });
 
-        user.accounts.push( account._id );
+        user.accounts.push(account._id);
         await user.save();
 
-        return res.status( 200 ).json( {
+        return res.status(200).json({
             msg: "|-- user has been added to database --|",
             userDetails: {
                 user: user.companyName,
                 email: user.email,
                 roleUser: user.roleUser,
             },
-        } );
+        });
         // Aqui se creo una validaciòn especial para que se pueda cambiar el rol de admin y caja
 
     } catch (e) {

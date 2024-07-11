@@ -8,6 +8,7 @@ import {validDpi, validType} from "../helpers/db-validators.js"
 export const createAccount = async(req, res) => {
     try {
         const {dpiNumber, accountType} = req.body;
+        
         const user = await User.findOne({dpi:dpiNumber});
         if (!user) {
             return res.status(404).send("Usuario no encontrado");
@@ -212,6 +213,68 @@ export const accountbalance = async (req, res) => {
 
     } catch (e) {
         console.log(e);
-        return res.status(500).send("Comuniquese con el administrador, no cunenta con saldo.")
+        return res.status(500).send("Comuniquese con el administrador, no cuenta con saldo.")
     }
 };
+
+export const addFavoriteAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const account = await Account.findById(id);
+        if (!account) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        if (account.favorite) {
+            return res.status(200).send("Esta cuenta ya está en favoritos");
+        }
+
+        account.favorite = true;
+        await account.save();
+
+        return res.status(200).send("Cuenta marcada como favorita exitosamente");
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al marcar la cuenta como favorita");
+    }
+};
+
+export const removeFavoriteAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const account = await Account.findById(id);
+        if (!account) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        if (!account.favorite) {
+            return res.status(200).send("Esta cuenta no está en favoritos");
+        }
+
+        account.favorite = false;
+        await account.save();
+
+        return res.status(200).send("Cuenta desmarcada como favorita exitosamente");
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al desmarcar la cuenta como favorita");
+    }
+};
+
+export const getFavoriteAccounts = async (req, res) => {
+    try {
+        const favoriteAccounts = await Account.find({ favorite: true });
+        
+        if (favoriteAccounts.length === 0) {
+            return res.status(404).send("No hay cuentas marcadas como favoritas");
+        }
+
+        return res.status(200).json(favoriteAccounts);
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener las cuentas favoritas");
+    }
+};
+
