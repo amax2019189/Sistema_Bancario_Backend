@@ -33,7 +33,8 @@ async function addUser(user) {
                 dpi: user.dpi,
                 numbercel: user.numbercel,
                 img: user.img,
-                password: hashedPassword
+                password: hashedPassword,
+                birthdate: user.birthdate,
             });
 
             console.log(`Added user: ${user.email}`);
@@ -57,7 +58,9 @@ async function addUsers() {
             dpi: "1655424890101",
             numbercel: "10101010",
             img: "Foto de Perfil",
-            password: "123456"
+            password: "123456",
+            birthdate: "2005-03-01",
+            stateUser: true,
         },
         {
             email: "bmendoza@gmail.com",
@@ -67,7 +70,9 @@ async function addUsers() {
             dpi: "5645445450101",
             numbercel: "10101010",
             img: "Foto de Perfil",
-            password: "123456"
+            password: "123456",
+            birthdate: "2005-03-01",
+            stateUser: true,
         },
         {
             email: "epereira@gmail.com",
@@ -79,6 +84,7 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "lvaquin@gmail.com",
@@ -90,6 +96,7 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "eramirez@gmail.com",
@@ -101,6 +108,7 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "gerente@gmail.com",
@@ -112,6 +120,7 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "caja@gmail.com",
@@ -123,6 +132,7 @@ async function addUsers() {
             numbercel: "10101010",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "services@gmail.com",
@@ -134,6 +144,7 @@ async function addUsers() {
             numbercel: "73468552",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "ADMINB@gmail.com",
@@ -145,6 +156,7 @@ async function addUsers() {
             numbercel: "73468552",
             img: "Foto de Perfil",
             stateUser: true,
+            birthdate: "2005-03-01",
         }
 
     ];

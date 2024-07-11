@@ -4,28 +4,28 @@ import UserService from "../services/userService.model.js"
 import Account from '../acounts/acount.model.js';
 import { generarJWT } from '../helpers/generate-JWT.js';
 
-export const register = async ( req, res ) => {
+export const register = async (req, res) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome,birthdate , username, accountUse  } = req.body;
-        const encryptPassword = bcryptjs.hashSync( password );
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, birthdate, username, accountUse } = req.body;
+        const encryptPassword = bcryptjs.hashSync(password);
 
-         // Validar edad
-         const birthdateDate = new Date(birthdate);
-         const ageDifMs = Date.now() - birthdateDate.getTime();
-         const ageDate = new Date(ageDifMs);
-         const age = Math.abs(ageDate.getUTCFullYear() - 1970);
- 
-         if (age < 18) {
-             return res.status(400).json({ msg: "User must be at least 18 years old" });
-         }
+        // Validar edad
+        const birthdateDate = new Date(birthdate);
+        const ageDifMs = Date.now() - birthdateDate.getTime();
+        const ageDate = new Date(ageDifMs);
+        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
-        const user = await User.create( {
+        if (age < 18) {
+            return res.status(400).json({ msg: "User must be at least 18 years old" });
+        }
+
+        const user = await User.create({
             name,
             lastname,
             dpi,
             numbercel,
             address,
-            namwork:namework,
+            namwork: namework,
             monthlyincome,
             username,
             img,
@@ -34,7 +34,7 @@ export const register = async ( req, res ) => {
             roleUser,
             birthdate,
             accounts: []
-        } );
+        });
 
         const account = await Account.create({
             accountType: "monetaria", // O cualquier otro tipo predeterminado
@@ -44,21 +44,22 @@ export const register = async ( req, res ) => {
             user: user._id
         });
 
-        user.accounts.push( account._id );
+        user.accounts.push(account._id);
         await user.save();
 
-        return res.status( 200 ).json( {
+        return res.status(200).json({
             msg: "|-- user has been added to database --|",
             userDetails: {
                 user: user.name,
                 email: user.email,
                 roleUser: user.roleUser,
+                token: token
             },
-        } );
+        });
 
-    } catch ( e ) {
-        console.log( e );
-        return res.status( 500 ).send( "Failed to register user" );
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Failed to register user");
     }
 };
 
@@ -103,8 +104,8 @@ export const login = async (req, res) => {
                 email: user.email,
                 roleUser: user.roleUser,
                 accounts: user.accounts,
-                token: token,
             },
+            token: token,
         });
 
     } catch (e) {

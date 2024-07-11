@@ -10,7 +10,7 @@ const UserSubSchema = new Schema({
     },
     dpi: {
         type: String,
-    }
+    },
 });
 
 const ServiceSchema = new Schema({

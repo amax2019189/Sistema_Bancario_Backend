@@ -8,6 +8,7 @@ import {validDpi, validType} from "../helpers/db-validators.js"
 export const createAccount = async(req, res) => {
     try {
         const {dpiNumber, accountType} = req.body;
+        
         const user = await User.findOne({dpi:dpiNumber});
         if (!user) {
             return res.status(404).send("Usuario no encontrado");
