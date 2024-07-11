@@ -6,8 +6,18 @@ import { generarJWT } from '../helpers/generate-JWT.js';
 
 export const register = async ( req, res ) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, username, accountUse } = req.body;
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, birthdate, username, accountUse } = req.body;
         const encryptPassword = bcryptjs.hashSync( password );
+
+        // Validar edad
+        const birthdateDate = new Date( birthdate );
+        const ageDifMs = Date.now() - birthdateDate.getTime();
+        const ageDate = new Date( ageDifMs );
+        const age = Math.abs( ageDate.getUTCFullYear() - 1970 );
+
+        if ( age < 18 ) {
+            return res.status( 400 ).json( { msg: "User must be at least 18 years old" } );
+        }
 
         const user = await User.create( {
             name,
@@ -22,6 +32,7 @@ export const register = async ( req, res ) => {
             email: email.toLowerCase(),
             password: encryptPassword,
             roleUser,
+            birthdate,
             accounts: []
         } );
 
