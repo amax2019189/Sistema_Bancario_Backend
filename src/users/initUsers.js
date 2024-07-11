@@ -32,6 +32,7 @@ async function addUser ( user ) {
                 roleUser: user.roleUser,
                 dpi: user.dpi,
                 numbercel: user.numbercel,
+                birthdate: user.birthdate,
                 img: user.img,
                 password: hashedPassword
             } );
@@ -48,6 +49,7 @@ async function addUser ( user ) {
 async function addUsers () {
     await connectToMongo();
 
+    //birthdate = > 18 years old. Format YYYY/MM/DD
     const usersToInsert = [
         {
             email: "amax@gmail.com",
@@ -56,6 +58,7 @@ async function addUsers () {
             roleUser: "administrador",
             dpi: "1655424890101",
             numbercel: "10101010",
+            birthdate: "1999/01/01",
             img: "Foto de Perfil",
             password: "123456"
         },
@@ -67,6 +70,7 @@ async function addUsers () {
             dpi: "5645445450101",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             password: "123456"
         },
         {
@@ -78,6 +82,7 @@ async function addUsers () {
             dpi: "1591597894625",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -89,6 +94,7 @@ async function addUsers () {
             dpi: "7319468245679",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -100,6 +106,7 @@ async function addUsers () {
             dpi: "1597534568520",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -111,6 +118,7 @@ async function addUsers () {
             dpi: "7531594568524",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -122,6 +130,7 @@ async function addUsers () {
             dpi: "1472583697891",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -133,6 +142,7 @@ async function addUsers () {
             dpi: "7198256487396",
             numbercel: "73468552",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         },
         {
@@ -144,6 +154,7 @@ async function addUsers () {
             dpi: "103024579819",
             numbercel: "73468552",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
         }
 
