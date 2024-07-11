@@ -98,11 +98,13 @@ export const login = async ( req, res ) => {
         res.status( 200 ).json( {
             msg: "Login Ok!!!",
             userDetails: {
+                _id: user._id,
                 name: user.name || user.companyName,
                 lastname: user.lastname || "",
                 email: user.email,
                 numbercel: user.numbercel,
                 address: user.address,
+                birthdate: user.birthdate,
                 roleUser: user.roleUser,
                 accounts: user.accounts,
                 token: token,

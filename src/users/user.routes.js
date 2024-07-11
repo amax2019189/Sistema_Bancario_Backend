@@ -10,7 +10,6 @@ router.put(
     [
         check( "email", "Este no es un correo válido" ).isEmail(),
         check( "lastname" ),
-        check( "dpi" ),
         check( "numbercel" ),
         check( "img" ),
         check( "name", "El username es obligatorio" ).not().isEmpty(),

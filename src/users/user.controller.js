@@ -10,7 +10,7 @@ export const updateUser = async ( req, res ) => {
             return res.status( 403 ).json( { msg: 'No estás autorizado para actualizar este usuario' } );
         }
 
-        const { _id, password, email, ...rest } = req.body;
+        const { _id, password, email, dpi, ...rest } = req.body;
 
         if ( password ) {
             const salt = bcryptjs.genSaltSync();
