@@ -1,12 +1,25 @@
 import bcryptjs from 'bcryptjs';
 import User from '../users/user.model.js';
+import UserService from "../services/userService.model.js"
 import Account from '../acounts/acount.model.js';
 import { generarJWT } from '../helpers/generate-JWT.js';
 
 export const register = async ( req, res ) => {
     try {
-        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, username } = req.body;
+        const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, birthdate, username, accountUse } = req.body;
+
         const encryptPassword = bcryptjs.hashSync( password );
+
+        // Validar edad
+        const birthdateDate = new Date( birthdate );
+        const ageDifMs = Date.now() - birthdateDate.getTime();
+        const ageDate = new Date( ageDifMs );
+        const age = Math.abs( ageDate.getUTCFullYear() - 1970 );
+
+
+        if ( age < 18 ) {
+            return res.status( 400 ).json( { msg: "User must be at least 18 years old" } );
+        }
 
         const user = await User.create( {
             name,
@@ -14,20 +27,23 @@ export const register = async ( req, res ) => {
             dpi,
             numbercel,
             address,
-            namework,
+            namwork: namework,
             monthlyincome,
             username,
             img,
             email: email.toLowerCase(),
             password: encryptPassword,
             roleUser,
+            birthdate,
             accounts: []
         } );
 
         const account = await Account.create( {
             accountType: "monetaria", // O cualquier otro tipo predeterminado
             accountBalance: 0.00,
-            state: "activa"
+            state: "activa",
+            accountUse, // Valor predeterminado válido
+            user: user._id
         } );
 
         user.accounts.push( account._id );
@@ -39,6 +55,7 @@ export const register = async ( req, res ) => {
                 user: user.name,
                 email: user.email,
                 roleUser: user.roleUser,
+                token: token
             },
         } );
 
@@ -54,7 +71,11 @@ export const login = async ( req, res ) => {
 
         console.log( 'Received login request for email:', email );
 
-        const user = await User.findOne( { email: email.toLowerCase() } ).populate('accounts');
+        // Try to find the user in both collections
+        let user = await User.findOne( { email: email.toLowerCase() } ).populate( 'accounts' );
+        if ( !user ) {
+            user = await UserService.findOne( { email: email.toLowerCase() } ).populate( 'accounts' );
+        }
 
         if ( !user ) {
             console.log( 'User not found:', email );
@@ -80,17 +101,24 @@ export const login = async ( req, res ) => {
         res.status( 200 ).json( {
             msg: "Login Ok!!!",
             userDetails: {
-                name: user.name,
-                lastname: user.lastname,
+                _id: user._id,
+                name: user.name || user.companyName,
+                lastname: user.lastname || "",
                 email: user.email,
+                numbercel: user.numbercel,
+                address: user.address,
+                birthdate: user.birthdate,
                 roleUser: user.roleUser,
-                accounts: user.accounts,
-                token: token,
+                accounts: user.accounts
             },
+            token: token,
         } );
+
+
 
     } catch ( e ) {
         console.error( 'Error during login:', e );
         res.status( 500 ).send( `Comuniquese con el administrador. Error details: ${e.message}` );
     }
 };
+

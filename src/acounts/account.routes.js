@@ -4,7 +4,7 @@ import { validateFields } from "../middlewares/validateFields.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 import { 
     activateAccount, 
-    createAccount, 
+    createAccount,
     desactivateAccount, 
     getAccountsUser, 
     getUserAccountsDetailsByEmail, 

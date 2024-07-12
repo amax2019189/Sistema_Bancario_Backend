@@ -11,6 +11,7 @@ const TOKEN_KEY = '$i$tem@B@nc@ri0_bim3';
 export const createAccount = async(req, res) => {
     try {
         const {dpiNumber, accountType} = req.body;
+        
         const user = await User.findOne({dpi:dpiNumber});
         if (!user) {
             return res.status(404).send("Usuario no encontrado");
@@ -203,53 +204,6 @@ export const getAccountDetailsByIdForUser = async (req, res) => {
         return res.status(500).send("Error al obtener los detalles de la cuenta");
     }
 };
-/*
-export const accountbalance = async (req, res) => {
-    try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-            return res.status(401).send({ message: 'Token no proporcionado' });
-        }
-
-        const token = authHeader.split(' ')[1];
-        if (!token) {
-            return res.status(401).send({ message: 'Token no proporcionado' });
-        }
-
-        let decoded;
-
-        try {
-            decoded = jwt.verify(token, TOKEN_KEY);
-        } catch (e) {
-            console.log('Error al verificar el token:', e);
-            return res.status(401).send({ message: 'Token inválido' });
-        }
-
-        console.log('Decoded token:', decoded);
-        
-        const userId = decoded.uid;
-        if (!userId) {
-            return res.status(401).send({ message: 'Token inválido' });
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).send({ message: 'Usuario no encontrado' });
-        }
-
-        const account = await Account.findOne({ userId: user._uid });
-        if (!account) {
-            return res.status(404).send({ message: 'Cuenta no encontrada' });
-        }
-
-        res.status(200).json({ saldo: account.accountBalance });
-
-    } catch (e) {
-        console.log(e);
-        return res.status(500).send("Comuníquese con el administrador, no cuenta con saldo.");
-    }
-};
-*/
 
 export const getUserAccountsSummary = async (req, res) => {
     try {
@@ -293,5 +247,68 @@ export const getUserAccountsSummary = async (req, res) => {
     } catch (e) {
         console.log(e);
         return res.status(500).send("Error al obtener los detalles de las cuentas del usuario");
+        return res.status(500).send("Comuniquese con el administrador, no cuenta con saldo.")
     }
 };
+
+export const addFavoriteAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const account = await Account.findById(id);
+        if (!account) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        if (account.favorite) {
+            return res.status(200).send("Esta cuenta ya está en favoritos");
+        }
+
+        account.favorite = true;
+        await account.save();
+
+        return res.status(200).send("Cuenta marcada como favorita exitosamente");
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al marcar la cuenta como favorita");
+    }
+};
+
+export const removeFavoriteAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const account = await Account.findById(id);
+        if (!account) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        if (!account.favorite) {
+            return res.status(200).send("Esta cuenta no está en favoritos");
+        }
+
+        account.favorite = false;
+        await account.save();
+
+        return res.status(200).send("Cuenta desmarcada como favorita exitosamente");
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al desmarcar la cuenta como favorita");
+    }
+};
+
+export const getFavoriteAccounts = async (req, res) => {
+    try {
+        const favoriteAccounts = await Account.find({ favorite: true });
+        
+        if (favoriteAccounts.length === 0) {
+            return res.status(404).send("No hay cuentas marcadas como favoritas");
+        }
+
+        return res.status(200).json(favoriteAccounts);
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener las cuentas favoritas");
+    }
+};
+

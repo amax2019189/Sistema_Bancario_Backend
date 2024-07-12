@@ -1,26 +1,13 @@
 import mongoose, {Schema} from "mongoose";
 
-const FavoriteSchema = mongoose.Schema({
-    accountNumber: {
-        type: String,
-        required: true
-    },
-    alias: {
-        type: String,
-    },
-});
-
 const roles = ['gerente', 'administrador', 'usuario', 'caja', 'services'];
 
-const UserSchema = mongoose.Schema({
+const UserServiceSchema = mongoose.Schema({
     dpi: {
         type: String,
     },
     
-    name: {
-        type: String,
-    },
-    lastname: {
+    companyName: {
         type: String,
     },
     username: {
@@ -58,18 +45,12 @@ const UserSchema = mongoose.Schema({
         ref: 'Account',
         default:[]
     }],
-    favorites: [FavoriteSchema],
-    
-    birthdate: {
-        type: Date,
-        required: true,
-    },
 });
 
-UserSchema.methods.toJSON = function(){
+UserServiceSchema.methods.toJSON = function(){
     const { __v, password, _id, ...user} = this.toObject();
     user.uid = _id;
     return user;
 }
 
-export default mongoose.model('User', UserSchema);
+export default mongoose.model('UserService', UserServiceSchema);

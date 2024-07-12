@@ -1,26 +1,39 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
+
+const accountUses = ['Personal', 'Business', 'Other'];
 
 const AccountSchema = mongoose.Schema({
     accountNumber: {
-        type:String,
+        type: String,
         unique: true
     },
     accountType: {
         type: String,
-        enum: [ "monetaria", "monetariaDolares", "ahorro", "ahorroDolares"],
+        enum: ["monetaria", "monetariaDolares", "ahorro", "ahorroDolares"],
         default: "monetaria"
     },
-    accountBalance : {
+    accountBalance: {
         type: Number,
         default: 0.00,
     },
     state: {
         type: String,
-        enum: ["desactivada","activa"],
+        enum: ["desactivada", "activa"],
         default: "activa"
     },
-    
-})
+    accountUse: {
+        type: String,
+        enum: accountUses, // Enum para validar los valores de accountUse
+        default: 'Personal',
+    },
+    service: {
+        type: String,
+    },
+    favorite: {
+        type: Boolean,
+        default: false,
+    }
+});
 
 AccountSchema.pre('save', async function(next) {
     if (this.isNew) {
@@ -37,4 +50,4 @@ AccountSchema.pre('save', async function(next) {
     next();
 });
 
-export default mongoose.model('Account', AccountSchema)
+export default mongoose.model('Account', AccountSchema);

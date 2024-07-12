@@ -4,28 +4,28 @@ import bcryptjs from 'bcryptjs';
 // Importar el modelo de usuario
 import UserModel from './user.model.js';
 
-async function connectToMongo() {
+async function connectToMongo () {
     try {
-        await mongoose.connect(process.env.URI_MONGO || 'mongodb://localhost:27017/SistemaBancario', {
+        await mongoose.connect( process.env.URI_MONGO || 'mongodb://localhost:27017/SistemaBancario', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-        });
-        console.log('MongoDB conectado exitosamente.');
-    } catch (error) {
-        console.error('Error al conectar a MongoDB:', error.message);
-        process.exit(1); // Termina la aplicación si no se puede conectar a MongoDB
+        } );
+        console.log( 'MongoDB conectado exitosamente.' );
+    } catch ( error ) {
+        console.error( 'Error al conectar a MongoDB:', error.message );
+        process.exit( 1 ); // Termina la aplicación si no se puede conectar a MongoDB
     }
 }
 
-async function addUser(user) {
+async function addUser ( user ) {
     try {
-        const existingUser = await UserModel.findOne({ email: user.email });
+        const existingUser = await UserModel.findOne( { email: user.email } );
 
-        if (!existingUser) {
-            const salt = await bcryptjs.genSalt(10);
-            const hashedPassword = await bcryptjs.hash(user.password, salt);
+        if ( !existingUser ) {
+            const salt = await bcryptjs.genSalt( 10 );
+            const hashedPassword = await bcryptjs.hash( user.password, salt );
 
-            await UserModel.create({
+            await UserModel.create( {
                 email: user.email,
                 name: user.name,
                 lastname: user.lastname,
@@ -33,21 +33,23 @@ async function addUser(user) {
                 dpi: user.dpi,
                 numbercel: user.numbercel,
                 img: user.img,
-                password: hashedPassword
+                password: hashedPassword,
+                birthdate: user.birthdate,
             });
 
-            console.log(`Added user: ${user.email}`);
+            console.log( `Added user: ${user.email}` );
         } else {
-            console.log(`exists user: ${user.email}`);
+            console.log( `exists user: ${user.email}` );
         }
-    } catch (error) {
-        console.error(`Error adding user with email ${user.email}:`, error.message);
+    } catch ( error ) {
+        console.error( `Error adding user with email ${user.email}:`, error.message );
     }
 }
 
-async function addUsers() {
+async function addUsers () {
     await connectToMongo();
 
+    //birthdate = > 18 years old. Format YYYY/MM/DD
     const usersToInsert = [
         {
             email: "amax@gmail.com",
@@ -56,8 +58,11 @@ async function addUsers() {
             roleUser: "administrador",
             dpi: "1655424890101",
             numbercel: "10101010",
+            birthdate: "1999/01/01",
             img: "Foto de Perfil",
-            password: "123456"
+            password: "123456",
+            birthdate: "2005-03-01",
+            stateUser: true,
         },
         {
             email: "bmendoza@gmail.com",
@@ -67,7 +72,9 @@ async function addUsers() {
             dpi: "5645445450101",
             numbercel: "10101010",
             img: "Foto de Perfil",
-            password: "123456"
+            password: "123456",
+            birthdate: "2005-03-01",
+            stateUser: true,
         },
         {
             email: "epereira@gmail.com",
@@ -78,7 +85,9 @@ async function addUsers() {
             dpi: "1591597894625",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "lvaquin@gmail.com",
@@ -89,7 +98,9 @@ async function addUsers() {
             dpi: "7319468245679",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "eramirez@gmail.com",
@@ -100,7 +111,9 @@ async function addUsers() {
             dpi: "1597534568520",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "gerente@gmail.com",
@@ -111,7 +124,9 @@ async function addUsers() {
             dpi: "7531594568524",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
+            birthdate: "2005-03-01",
         },
         {
             email: "caja@gmail.com",
@@ -122,13 +137,41 @@ async function addUsers() {
             dpi: "1472583697891",
             numbercel: "10101010",
             img: "Foto de Perfil",
+            birthdate: "1999/01/01",
             stateUser: true,
+            birthdate: "2005-03-01",
+        },
+        {
+            email: "services@gmail.com",
+            name: "services",
+            lastname: "services",
+            password: "123456",
+            roleUser: "services",
+            dpi: "7198256487396",
+            numbercel: "73468552",
+            img: "Foto de Perfil",
+            birthdate: "1999/01/01",
+            stateUser: true,
+            birthdate: "2005-03-01",
+        },
+        {
+            email: "ADMINB@gmail.com",
+            name: "ADMINB",
+            lastname: "ADMINB",
+            password: "123456",
+            roleUser: "administrador",
+            dpi: "103024579819",
+            numbercel: "73468552",
+            img: "Foto de Perfil",
+            birthdate: "1999/01/01",
+            stateUser: true,
+            birthdate: "2005-03-01",
         }
 
     ];
 
-    for (const user of usersToInsert) {
-        await addUser(user);
+    for ( const user of usersToInsert ) {
+        await addUser( user );
     }
 }
 

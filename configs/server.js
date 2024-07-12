@@ -13,6 +13,7 @@ import loanRoutes from '../src/loan/loan.routes.js';
 import banckRoutes from '../src/bankCash/bankCash.routes.js'
 import apiLimiter from "../src/middlewares/validar-peticiones.js";
 import conversionsRoutes from "../src/convertidor/convertidor.routes.js"
+import payServiceRoutes from "../src/services/service.routes.js"
  
 class Server {
     constructor() {
@@ -26,6 +27,7 @@ class Server {
         this.loanPath = '/sistemaBancario/v1/loan'
         this.banckPath = '/sistemaBancario/v1/banck'
         this.convertPath= '/sistemaBancario/v1/convert'
+        this.servicePath = '/sistemaBancario/v1/service'
         this.conectarDB();
         this.middlewares();
         this.routes();
@@ -54,6 +56,7 @@ class Server {
         this.app.use(this.loanPath, loanRoutes);
         this.app.use(this.banckPath, banckRoutes);
         this.app.use(this.convertPath, conversionsRoutes)
+        this.app.use(this.servicePath, payServiceRoutes)
     };
  
     listen() {
