@@ -9,7 +9,7 @@ import {
     getAccountsUser, 
     getUserAccountsDetailsByEmail, 
     getAccountDetailsByIdForUser,
-    accountbalance
+    getUserAccountsSummary
 } from "./account.controller.js";
 
 const router = Router();
@@ -59,6 +59,6 @@ router.post(
 
 router.get('/user/accounts', validarJWT, getUserAccountsDetailsByEmail);
 router.get('/:id', validarJWT, getAccountDetailsByIdForUser);
-router.get('/account/:id/saldo', accountbalance);
+router.get('/account/saldo', validarJWT, getUserAccountsSummary);
 
 export default router;

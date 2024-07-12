@@ -4,7 +4,7 @@ import UserService from "../services/userService.model.js"
 import Account from '../acounts/acount.model.js';
 import { generarJWT } from '../helpers/generate-JWT.js';
 
-export const register = async (req, res) => {
+export const register = async ( req, res ) => {
     try {
         const { email, name, lastname, password, roleUser, dpi, numbercel, img, address, namework, monthlyincome, birthdate, username, accountUse } = req.body;
 
@@ -17,11 +17,11 @@ export const register = async (req, res) => {
         const age = Math.abs( ageDate.getUTCFullYear() - 1970 );
 
 
-        if (age < 18) {
-            return res.status(400).json({ msg: "User must be at least 18 years old" });
+        if ( age < 18 ) {
+            return res.status( 400 ).json( { msg: "User must be at least 18 years old" } );
         }
 
-        const user = await User.create({
+        const user = await User.create( {
             name,
             lastname,
             dpi,
@@ -36,7 +36,7 @@ export const register = async (req, res) => {
             roleUser,
             birthdate,
             accounts: []
-        });
+        } );
 
         const account = await Account.create( {
             accountType: "monetaria", // O cualquier otro tipo predeterminado
@@ -46,10 +46,10 @@ export const register = async (req, res) => {
             user: user._id
         } );
 
-        user.accounts.push(account._id);
+        user.accounts.push( account._id );
         await user.save();
 
-        return res.status(200).json({
+        return res.status( 200 ).json( {
             msg: "|-- user has been added to database --|",
             userDetails: {
                 user: user.name,
@@ -57,11 +57,11 @@ export const register = async (req, res) => {
                 roleUser: user.roleUser,
                 token: token
             },
-        });
+        } );
 
-    } catch (e) {
-        console.log(e);
-        return res.status(500).send("Failed to register user");
+    } catch ( e ) {
+        console.log( e );
+        return res.status( 500 ).send( "Failed to register user" );
     }
 };
 
@@ -109,10 +109,11 @@ export const login = async ( req, res ) => {
                 address: user.address,
                 birthdate: user.birthdate,
                 roleUser: user.roleUser,
-                accounts: user.accounts,
+                accounts: user.accounts
             },
             token: token,
-        });
+        } );
+
 
 
     } catch ( e ) {
@@ -120,3 +121,4 @@ export const login = async ( req, res ) => {
         res.status( 500 ).send( `Comuniquese con el administrador. Error details: ${e.message}` );
     }
 };
+
