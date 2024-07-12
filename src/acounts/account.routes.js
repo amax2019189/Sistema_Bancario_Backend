@@ -31,7 +31,7 @@ router.get(
     "/myAccount",validarJWT,getAccountsUser
 )
 
-router.delete(
+router.post(
     "/deleteAccount",
     [
         validarJWT,
