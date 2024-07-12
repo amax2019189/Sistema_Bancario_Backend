@@ -55,8 +55,7 @@ export const register = async ( req, res ) => {
                 user: user.name,
                 email: user.email,
                 roleUser: user.roleUser,
-                token: token
-            },
+                },
         } );
 
     } catch ( e ) {
