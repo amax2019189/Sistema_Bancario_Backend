@@ -4,6 +4,9 @@ import Deposit from '../deposits/deposits.model.js'
 import Transfer from '../transfer/transfer.model.js'
 import User from "../users/user.model.js";
 import {validDpi, validType} from "../helpers/db-validators.js"
+import jwt from 'jsonwebtoken'
+
+const TOKEN_KEY = '$i$tem@B@nc@ri0_bim3';
 
 export const createAccount = async(req, res) => {
     try {
@@ -200,19 +203,95 @@ export const getAccountDetailsByIdForUser = async (req, res) => {
         return res.status(500).send("Error al obtener los detalles de la cuenta");
     }
 };
-
-
+/*
 export const accountbalance = async (req, res) => {
     try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).send({ message: 'Token no proporcionado' });
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).send({ message: 'Token no proporcionado' });
+        }
+
+        let decoded;
+
+        try {
+            decoded = jwt.verify(token, TOKEN_KEY);
+        } catch (e) {
+            console.log('Error al verificar el token:', e);
+            return res.status(401).send({ message: 'Token inválido' });
+        }
+
+        console.log('Decoded token:', decoded);
         
-        const account = await Account.findById(req.params.id);
+        const userId = decoded.uid;
+        if (!userId) {
+            return res.status(401).send({ message: 'Token inválido' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send({ message: 'Usuario no encontrado' });
+        }
+
+        const account = await Account.findOne({ userId: user._uid });
         if (!account) {
             return res.status(404).send({ message: 'Cuenta no encontrada' });
         }
-        res.send({ saldo: cuenta.saldo });
+
+        res.status(200).json({ saldo: account.accountBalance });
 
     } catch (e) {
         console.log(e);
-        return res.status(500).send("Comuniquese con el administrador, no cunenta con saldo.")
+        return res.status(500).send("Comuníquese con el administrador, no cuenta con saldo.");
+    }
+};
+*/
+
+export const getUserAccountsSummary = async (req, res) => {
+    try {
+        // Buscar el usuario autenticado por su email en el token
+        const user = await User.findOne({ email: req.user.email }).populate('accounts');
+
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        // Obtener los detalles de las cuentas y los últimos 5 movimientos
+        const accountDetails = await Promise.all(user.accounts.map(async (account) => {
+            // Obtener los últimos 5 depósitos y transferencias para cada cuenta
+            const deposits = await Deposit.find({ accountNumberDestino: account.accountNumber })
+                .sort({ createdAt: -1 })
+                .limit(5);
+
+            const transfersSent = await Transfer.find({ accountNumberOrigen: account.accountNumber })
+                .sort({ createdAt: -1 })
+                .limit(5);
+
+            const transfersReceived = await Transfer.find({ accountNumberDestino: account.accountNumber })
+                .sort({ createdAt: -1 })
+                .limit(5);
+
+            // Combinar todos los movimientos y ordenar por fecha
+            const movements = [...deposits, ...transfersSent, ...transfersReceived]
+                .sort((a, b) => b.createdAt - a.createdAt)
+                .slice(0, 5); // Obtener solo los últimos 5 movimientos
+
+            return {
+                accountNumber: account.accountNumber,
+                accountType: account.accountType,
+                accountBalance: account.accountBalance,
+                movements
+            };
+        }));
+
+        return res.status(200).json(accountDetails);
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send("Error al obtener los detalles de las cuentas del usuario");
     }
 };
