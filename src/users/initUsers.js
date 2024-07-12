@@ -35,6 +35,7 @@ async function addUser ( user ) {
                 img: user.img,
                 password: hashedPassword,
                 birthdate: user.birthdate,
+                username: user.username
             });
 
             console.log( `Added user: ${user.email}` );

@@ -94,7 +94,7 @@ export const login = async ( req, res ) => {
             return res.status( 400 ).send( "Wrong password" );
         }
 
-        const token = await generarJWT( user.id, user.email, user.roleUser, user.username );
+        const token = await generarJWT( user.id, user.email, user.roleUser);
 
         console.log( 'Login successful for user:', email );
 
@@ -109,12 +109,14 @@ export const login = async ( req, res ) => {
                 address: user.address,
                 birthdate: user.birthdate,
                 roleUser: user.roleUser,
-                accounts: user.accounts
+                accounts: user.accounts,
+                token: token,
             },
-            token: token,
+            
+            
         } );
 
-
+        console.log(token)
 
     } catch ( e ) {
         console.error( 'Error during login:', e );
