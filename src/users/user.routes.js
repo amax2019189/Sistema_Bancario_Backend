@@ -2,7 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator";
 import { validarJWT } from '../middlewares/validar-jwt.js';
 import { validateFields } from '../middlewares/validateFields.js';
-import { deleteUser, updateUser, getUser } from "./user.controller.js";
+import { deleteUser, updateUser, getUser, addFavorite, removeFavorite, updateFavoriteAlias } from "./user.controller.js";
 const router = Router();
 
 router.put(
@@ -42,6 +42,37 @@ router.get(
     ],
     getUser
 )
+
+router.put(
+    '/addFavorite/:id',
+    [
+        check( "id", "It is not a valid ID" ).isMongoId(),
+        validarJWT,
+        validateFields
+    ],
+    addFavorite
+)
+
+router.put(
+    '/removeFavorite/:id',
+    [
+        check( "id", "It is not a valid ID" ).isMongoId(),
+        validarJWT,
+        validateFields
+    ],
+    removeFavorite
+)
+
+router.put(
+    '/updateFavoriteAlias/:id',
+    [
+        check( "id", "It is not a valid ID" ).isMongoId(),
+        validarJWT,
+        validateFields
+    ],
+    updateFavoriteAlias
+)
+
 
 
 export default router;
