@@ -137,8 +137,10 @@ export const getPaidServices = async (req, res) => {
 
 export const registerService = async (req, res) => {
     try {
-        const { email, companyCode, companyName, username, numbercel, address, namwork, password, roleUser, monthlyincome, img, accountType } = req.body;
+        const { email, companyCode, companyName, username, numbercel, address, namwork, password, monthlyincome, img, accountType } = req.body;
         const encryptPassword = bcryptjs.hashSync(password);
+
+        console.log("Received request body:", req.body); // Log para verificar los datos recibidos
 
         const user = await UserService.create({
             companyName,
@@ -151,7 +153,6 @@ export const registerService = async (req, res) => {
             username,
             email: email.toLowerCase(),
             password: encryptPassword,
-            roleUser,
             accounts: []
         });
 
@@ -167,18 +168,14 @@ export const registerService = async (req, res) => {
         await user.save();
 
         return res.status(200).json({
-            msg: "|-- user has been added to database --|",
+            msg: "User has been added to database",
             userDetails: {
                 user: user.companyName,
-                email: user.email,
-                roleUser: user.roleUser,
+                email: user.email
             },
         });
-        // Aqui se creo una validaciòn especial para que se pueda cambiar el rol de admin y caja
-
-    } catch (e) {
-        console.log(e);
-        return res.status(500).send("Failed to register user");
+    } catch (error) {
+        console.error("Error in registerService:", error); // Log para mostrar el error específico
+        return res.status(500).json({ error: error.message });
     }
-}
-
+};
