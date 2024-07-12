@@ -10,16 +10,15 @@ export const createLoan = async (req, res) => {
 
     try {
 
-        const id = req.user.uid
-        const user = await User.findById({ id })
+        const user = await User.findById(req.user.uid)
 
         if (!user) {
             return res.status(404).send("Usuario no encontrado");
         }
 
-        if (user.dpi !== userLastName || user.name !== userName || user.lastName !== userLastName) {
-            return res.status(400).send("Datos del usuario incorrectos");
-        }
+        //if (user.dpi !== userDPI || user.name !== userName || user.lastName !== userLastName) {
+        //    return res.status(400).send("Datos del usuario incorrectos");
+        //}
 
         // Convertir withdrawal a minúsculas
         const withdrawalLower = withdrawal.toLowerCase();

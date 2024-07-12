@@ -9,7 +9,7 @@ const router = Router();
 
 router.post('/withdrawLoan', validarJWT, withdrawLoan);
 router.post('/payloan', validarJWT, payLoan);
-router.put('/approveLoan', validarJWT, approveLoan);
+router.post('/approveLoan', validarJWT, approveLoan);
 router.get('/getApproved', validarJWT, getApprovedLoans);
 router.get('/getNonApproved', validarJWT, getNonApprovedLoans)
 

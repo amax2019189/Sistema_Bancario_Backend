@@ -15,14 +15,30 @@ export const makeTransfer = async (req, res) => {
             return res.status(404).send("Cuenta origen o destino no encontrada");
         }
 
+        // Verificar si la cuenta origen pertenece al usuario
+        const user = await User.findById(req.user.uid);
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+
+        // Verificar si la cuenta origen está en la lista de cuentas del usuario
+        const isAccountOwnedByUser = user.accounts.some(accountId => accountId.equals(accountOrigen._id));
+        if (!isAccountOwnedByUser) {
+            return res.status(403).send("No eres propietario de la cuenta origen");
+        }
+
+        // Verificar que ambas cuentas estén activas
+        if (accountOrigen.state !== "activa" || accountDestino.state !== "activa") {
+            return res.status(400).send("Una o ambas cuentas no están activas");
+        }
+
         if (amount > 2000) {
             return res.status(400).send("No se puede transferir más de Q2000 en una sola transacción");
         }
 
-
         // Validar que el saldo de la cuenta origen sea suficiente
         if (accountOrigen.accountBalance < amount) {
-            return res.status(400).send("Saldo insuficiente" + amount);
+            return res.status(400).send("Saldo insuficiente");
         }
 
         // Validar que el usuario no exceda el límite de transferencia diaria
@@ -30,7 +46,7 @@ export const makeTransfer = async (req, res) => {
         today.setHours(0, 0, 0, 0);
 
         const transfersToday = await Transfer.find({
-            creatorTransfer: req.user.email ,
+            creatorTransfer: req.user.email,
             date: { $gte: today }
         });
 
@@ -41,7 +57,7 @@ export const makeTransfer = async (req, res) => {
         }
 
         accountOrigen.accountBalance -= amount;
-        accountDestino.accountBalance += finalAmount;
+        accountDestino.accountBalance += amount;
 
         await accountOrigen.save();
         await accountDestino.save();
@@ -49,7 +65,7 @@ export const makeTransfer = async (req, res) => {
         const transfer = await Transfer.create({
             accountNumberOrigen,
             accountNumberDestino,
-            amount: finalAmount,
+            amount,
             description,
             creatorTransfer: req.user.email
         });

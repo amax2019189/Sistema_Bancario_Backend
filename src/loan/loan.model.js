@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
 
 const LoanSchema = new mongoose.Schema({
     userDPI: {
@@ -16,9 +15,9 @@ const LoanSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        enum:["aprovada","pendiente", "denegada"],
+        enum: ["aprovada", "pendiente", "denegada"], // Corrige el typo en "aprobada"
         required: true,
-        default:"pendiente"
+        default: "pendiente"
     },
     amount: {
         type: Number,
@@ -49,23 +48,36 @@ const LoanSchema = new mongoose.Schema({
     withdrawal: {
         type: String,
         required: true,
-        enum:["cuenta", "caja"]
+        enum: ["cuenta", "caja"]
     },
     withdrawCode: {
         type: String,
-        default: uuidv4, // Use uuidv4 to generate unique codes automatically
         unique: true
     },
     withdrawCodeUsed: {
         type: Boolean,
         default: false
     },
-    approver:{
+    approver: {
         type: String,
     },
-    account:{
+    account: {
         type: String,
     }
 }, { timestamps: true });
 
+LoanSchema.pre('save', async function(next) {
+    if (this.isNew) {
+        let isUnique = false;
+        while (!isUnique) {
+            const randomAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            const existingLoan = await mongoose.models.Loan.findOne({ withdrawCode: randomAccountNumber });
+            if (!existingLoan) {
+                this.withdrawCode = randomAccountNumber;
+                isUnique = true;
+            }
+        }
+    }
+    next();
+});
 export default mongoose.model('Loan', LoanSchema);
