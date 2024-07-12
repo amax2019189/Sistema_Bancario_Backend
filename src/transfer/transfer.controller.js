@@ -3,8 +3,6 @@ import Transfer from "./transfer.model.js";
 import User from "../users/user.model.js";
 import Account from "../acounts/acount.model.js";
 
-const EXCHANGE_RATE = 7.75;
-
 export const makeTransfer = async (req, res) => {
     const { accountNumberOrigen, accountNumberDestino, amount, description, saveAsFavorite, alias } = req.body;
 
@@ -21,22 +19,10 @@ export const makeTransfer = async (req, res) => {
             return res.status(400).send("No se puede transferir más de Q2000 en una sola transacción");
         }
 
-        let finalAmount = amount;
-
-        const origenEsQuetzales = accountOrigen.accountType === 'monetaria' || accountOrigen.accountType === 'ahorro';
-        const destinoEsDolares = accountDestino.accountType === 'monetariaDolares' || accountDestino.accountType === 'ahorroDolares';
-        const origenEsDolares = accountOrigen.accountType === 'monetariaDolares' || accountOrigen.accountType === 'ahorroDolares';
-        const destinoEsQuetzales = accountDestino.accountType === 'monetaria' || accountDestino.accountType === 'ahorro';
-
-        if (origenEsQuetzales && destinoEsDolares) {
-            finalAmount = amount / EXCHANGE_RATE;
-        } else if (origenEsDolares && destinoEsQuetzales) {
-            finalAmount = amount * EXCHANGE_RATE;
-        }
 
         // Validar que el saldo de la cuenta origen sea suficiente
         if (accountOrigen.accountBalance < amount) {
-            return res.status(400).send("Saldo insuficiente" + finalAmount);
+            return res.status(400).send("Saldo insuficiente" + amount);
         }
 
         // Validar que el usuario no exceda el límite de transferencia diaria

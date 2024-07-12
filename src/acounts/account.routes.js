@@ -44,7 +44,7 @@ router.delete(
     desactivateAccount
 );
 
-router.put(
+router.post(
     "/activateAccount",
     [
         validarJWT,
